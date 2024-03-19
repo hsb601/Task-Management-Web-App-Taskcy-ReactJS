@@ -1,17 +1,14 @@
-# React JS Landing Page Template
+# ReactJS Task Management App
 
-**
-
-# 🛎️🛎️ Good news! New & improved [V2](https://github.com/issaafalkattan/react-landing-page-template-2021) is out  
-
-**
+# Demo Video
 
 
-### <a href="https://react-landing-page-template-93ne.vercel.app/">LIVE DEMO</a> 
+https://github.com/hsb601/Task-Management-Web-App-Taskcy-ReactJS/assets/65144195/7212c348-d0af-4f5e-98b5-e51071df0e9b
+
+
 
 ## Description
-This is a ReactJS based landing page template, fit for a startup company/service with a one page view. The design is inspired by a template from <a href="https://www.free-css.com/assets/files/free-css-templates/preview/page234/interact/">Free-CSS.com </a>
-All 'visual' data can be easily modified by changing the data.json file.
+This is Task management Web App working on this template credit goes to "" and other credit goes to The design is inspired by a template from <a href="https://www.free-css.com/assets/files/free-css-templates/preview/page234/interact/">Free-CSS.com </a>
 
 ## Make it Yours!
 ### 1. Preps
@@ -23,9 +20,6 @@ After cloning the files, you will have to run ```yarn``` followed by ```yarn sta
 Change the data in the ```data.json``` file as well as add any images to ```public/img/```
 You can also change styles by modifying the ```public/css``` files.
 If you need the contact form to work, you also need to create an EmailJS account, and modify the ```src/components/contact.jsx``` file to replace your own service ID, template ID and Public Key
-
-## Like this project?
-<a href="https://www.buymeacoffee.com/issaaf">Buy my a coffee ☕️</a>
 
 ## Credits
 ##### Free CSS 
