@@ -8,7 +8,7 @@ https://github.com/hsb601/Task-Management-Web-App-Taskcy-ReactJS/assets/65144195
 
 
 ## Description
-This is Task management Web App working on this template credit goes to <a href="https://github.com/issaafalkattan/React-Landing-Page-Template">Issaaf kattan</a>"" and other credit goes to The design is inspired by a template from <a href="https://www.free-css.com/assets/files/free-css-templates/preview/page234/interact/">Free-CSS.com </a>
+This is Task management Web App working on this template credit goes to <a href="https://github.com/issaafalkattan/React-Landing-Page-Template">Issaaf kattan</a> and other credit goes to The design is inspired by a template from <a href="https://www.free-css.com/assets/files/free-css-templates/preview/page234/interact/">Free-CSS.com </a>
 
 ## Make it Yours!
 ### 1. Preps
@@ -25,4 +25,5 @@ If you need the contact form to work, you also need to create an EmailJS account
 ##### Free CSS 
 <a href="https://www.free-css.com/assets/files/free-css-templates/preview/page234/interact/">Free-CSS.com </a>
 
-##### Issaaf kattan
+##### React Landing Page Template
+<a href="https://github.com/issaafalkattan/React-Landing-Page-Template">Issaaf kattan</a>
