@@ -17,8 +17,8 @@ export const Navigation = (props) => {
             <span className="icon-bar"></span>{" "}
             <span className="icon-bar"></span>{" "}
           </button>
-          <a href="#page-top">
-          <img src="img/splash2.png" className="icon" alt="" ></img> 
+          <a href="#page-top" className="navbar-brand page-scroll" >
+          <img src="img/splash2.png" style={styles.icon} alt="" ></img> 
           </a>
           <a className="navbar-brand page-scroll" href="#page-top">
           Taskcy
@@ -77,4 +77,14 @@ export const Navigation = (props) => {
      
     </nav>
   );
+};
+const styles = {
+  icon: {
+
+    marginTop: -30,
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'center',
+  },
+
 };

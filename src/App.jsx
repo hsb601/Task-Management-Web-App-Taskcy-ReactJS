@@ -16,6 +16,7 @@ import CreateTeam from "./components/loggedIn/CreateEvent";
 import Home from "./components/loggedIn/Home";
 import Project from "./components/loggedIn/Projects";
 import Navbar from "./components/loggedIn/Navigation";
+import Verify from "./components/loggedout/verify"
 import { HeaderNav } from "./components/loggedIn/HeaderNav";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import JsonData from "./data/data.json";
@@ -38,11 +39,12 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<LoginScreen/>} />
         <Route path="/signup" element={<SignupScreen />} />
+        <Route path="/verify" element={<Verify />} />
         <Route exact path="/home" element= { <div> <Navbar /> <Home /> </div> } />
         <Route path="/team" element={<div> <Navbar />  <CreateTeam /> </div>} />
         <Route path="/project" element={<div> <Navbar /> <Project /> </div> } />
         <Route path="/event" element={ <div> <Navbar /> <Event /> </div> } />
-        <Route path="/chats" element={ <div> <Navbar /> <hr/>  <hr/>  <hr/>  <hr style={{backgroundColor:"white"}}/> <Chat /> </div> } />
+        <Route path="/chats" element={ <div> <Navbar /> <Chat /></div> } />
 
 
         <Route

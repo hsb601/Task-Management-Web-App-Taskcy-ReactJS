@@ -14,47 +14,48 @@ export default function SignupScreen() {
 
   const [errormsg, setErrormsg] = useState(null);
 
-  const handleSignUp = async () => {
-    // Check if all required fields are filled
-    if (!fdata.name || !fdata.email || !fdata.password || !fdata.cpassword) {
-      setErrormsg('All fields are required');
-      return;
+  
+  const handleSignUp = () => {
+    // console.log(fdata);
+    if (fdata.name == '' ||
+        fdata.email == '' ||
+        fdata.password == '' ||
+        fdata.cpassword == '') {
+        setErrormsg('All fields are required');
+        return;
     }
-
-    // Check if password matches confirm password
-    if (fdata.password !== fdata.cpassword) {
-      setErrormsg('Password and Confirm Password must be the same');
-      return;
-    }
-
-    // Prepare the user data for signup
-    const userData = {
-      name: fdata.name,
-      email: fdata.email,
-      password: fdata.password,
-      dob: fdata.dob,
-    };
-
-    fetch('http://localhost:3000/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setErrormsg(data.error);
-        } else {
-          alert(userData.name + ': Signup Successful');
-          navigate.push('/login'); 
+    else {
+        if (fdata.password != fdata.cpassword) {
+            setErrormsg('Password and Confirm Password must be same');
+            return;
         }
-      })
-      .catch((error) => {
-        console.error('Error during signup:', error, userData);
-      });
-  };
+        else {
+            fetch('http://localhost:3000/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(fdata)
+            })
+                .then(res => res.json()).then(
+                    data => {
+                        // console.log(data);
+                        if (data.error === 'Invalid Credentials') {
+                            // alert('Invalid Credentials')
+                            setErrormsg('Invalid Credentials')
+                        }
+                        else if (data.message === "Verification Code Sent to your Email") {
+                            // console.log(data.udata);
+                            alert(data.message);
+                            navigate('/verify', { state: { userdata: data.udata } });
+
+                        }
+                    }
+                )
+        }
+    }
+
+}
 
   return (
     <div style={styles.container}>
@@ -179,11 +180,14 @@ const styles = {
   input: {
     width: '100%',
     height: 40,
-    backgroundColor: '#dfe4ea',
-    borderRadius: 4,
+    backgroundColor: 'white',
+    borderRadius: 10,
     padding: 10,
     color: 'black',
-    fontSize: 12,
+    fontSize: 16,
+    borderWidth: 4,  
+    borderColor: 'mediumpurple', 
+    
   },
   loginButton: {
     backgroundColor: 'mediumpurple',
@@ -194,6 +198,8 @@ const styles = {
     cursor: 'pointer',
     width: '100%',
     fontSize: 18,
+    borderWidth: 4,  
+    borderColor: 'mediumpurple', 
   },
   registerText: {
     textAlign: 'center',

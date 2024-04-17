@@ -8,14 +8,23 @@ import Modal from 'react-modal';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { project } from "../../data/data";
+import { styled } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   const [selectedOption, setSelectedOption] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const [isModalOpen4, setIsModalOpen4] = useState(false);
+  const [isModalOpen5, setIsModalOpen5] = useState(false);
   const [Name, setName] = useState('');
   const [Description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(new Date());
@@ -24,8 +33,56 @@ const Home = () => {
   const [Numbers, setNumber] = useState('');
   const [workersName, setWorkersName] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const handleSave = () => {
-    // Handle saving data
+  const navigate = useNavigate();
+  const [taskData, setTaskData] = useState({
+    tname: '',
+    tdetail: '',
+    sdate: '',
+    edate: ''
+  });
+  const formatDate = (date) => {
+    // Format date as string in ISO format (YYYY-MM-DDTHH:MM:SSZ)
+    return date.toISOString();
+  };
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const handleSave = async () => {
+
+
+
+    // Check if all required fields are filled
+    if (!taskData.tname || !taskData.tdetail || !taskData.sdate || !taskData.edate) {
+      setErrorMsg('All fields are required');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/task', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload task');
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        setErrorMsg(data.error);
+      } else {
+        alert('Task uploaded successfully');
+
+      }
+    } catch (error) {
+      console.error('Error during task upload:', error);
+      setErrorMsg('Failed to upload task. Please try again later.');
+    }
+
+
   };
   const handleChange = (event) => {
     setSelectedOption(event.target.value);
@@ -36,6 +93,7 @@ const Home = () => {
   const handleToggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
   const toggleModal = () => {
 
     setIsModalOpen(!isModalOpen);
@@ -55,6 +113,12 @@ const Home = () => {
 
     setIsModalOpen4(!isModalOpen4);
   };
+  const toggleModal5 = () => {
+
+    setIsModalOpen5(!isModalOpen5);
+  };
+
+
   return (
     <div style={styles.Container}>
       <Modal
@@ -62,40 +126,57 @@ const Home = () => {
         onRequestClose={toggleModal}
         contentLabel="Task Details"
         ariaHideApp={false}
-        style={customModalStyles} // Apply custom modal styles
+        style={customModalStyles}
       >
         <div style={styles.modalContent}>
+          {errorMsg ? <p style={styles.errormessage}>{errorMsg}</p> : null}
           <h2 style={styles.modalTitle}>Task Details</h2>
           <input
             placeholder="Task Name"
             style={styles.input}
-            value={Name}
-            onChange={(e) => setName(e.target.value)}
+            value={taskData.tname}
+            onChange={(e) => setTaskData({ ...taskData, tname: e.target.value })}
+            onFocus={() => setErrorMsg(null)}
           />
           <input
             placeholder="Task Description"
             style={styles.input}
-            value={Description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={taskData.tdetail}
+            onChange={(e) => setTaskData({ ...taskData, tdetail: e.target.value })}
+            onFocus={() => setErrorMsg(null)}
           />
 
           <div className='row'>
             <label style={styles.label}>Start Date
               <div> </div>
               <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-
+                selected={taskData.sdate}
+                onChange={(date) => {
+                  // Format the date as needed before setting it in the state
+                  const formattedDate = formatDate(date);
+                  // Update the taskData state with the new sdate
+                  setTaskData({ ...taskData, sdate: formattedDate });
+                }}
+                onFocus={() => setErrorMsg(null)}
               >
-              </DatePicker >
+              </DatePicker>
             </label>
           </div>
 
           <div className='row'>
             <label style={styles.label}>End Date
               <div> </div>
-              <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} >
-              </DatePicker >
+              <DatePicker
+                selected={taskData.edate}
+                onChange={(date) => {
+                  // Format the date as needed before setting it in the state
+                  const formattedDate = formatDate(date);
+                  // Update the taskData state with the new sdate
+                  setTaskData({ ...taskData, edate: formattedDate });
+                }}
+                onFocus={() => setErrorMsg(null)}
+              >
+              </DatePicker>
             </label>
           </div>
 
@@ -279,17 +360,17 @@ const Home = () => {
             value={Description}
             onChange={(e) => setDescription(e.target.value)}
           />
-  <div >
+          <div >
 
-<select id="dropdown" value={selectedOption} onChange={handleChange} style={styles.input}>
-  <option value="Select">-- Event Type --</option>
-  <option value="Webinar">Webinar</option>
-  <option value="Seminar">Seminar</option>
-  <option value="Farewell">Farewell</option>
-  <option value="Meeting">Meeting</option>
-</select>
-<p style={{ color: 'mediumpurple' }}>Event Type: {selectedOption}</p>
-</div>
+            <select id="dropdown" value={selectedOption} onChange={handleChange} style={styles.input}>
+              <option value="Select">-- Event Type --</option>
+              <option value="Webinar">Webinar</option>
+              <option value="Seminar">Seminar</option>
+              <option value="Farewell">Farewell</option>
+              <option value="Meeting">Meeting</option>
+            </select>
+            <p style={{ color: 'mediumpurple' }}>Event Type: {selectedOption}</p>
+          </div>
           <div className='row'>
             <label style={styles.label}>Start Date
               <div> </div>
@@ -307,9 +388,9 @@ const Home = () => {
             <label style={styles.label}>End Date
               <div> </div>
               <DatePicker selected={endDate}
-               onChange={(date) => setEndDate(date)}  
-               showTimeSelect
-               dateFormat="Pp" >
+                onChange={(date) => setEndDate(date)}
+                showTimeSelect
+                dateFormat="Pp" >
               </DatePicker >
             </label>
           </div>
@@ -326,32 +407,32 @@ const Home = () => {
           </div>
         </div>
       </Modal>
+      <Modal
+        isOpen={isModalOpen5}
+        onRequestClose={toggleModal5}
+        contentLabel="Add Button"
+        ariaHideApp={false}
+        style={customModalStyles2}
+      >
 
-      <div style={{ marginLeft: 10 }}>
-        <button onClick={handleToggleDropdown} style={styles.button} >
-          <FontAwesomeIcon icon={faPlus} color='white' />
-        </button>
-        <FontAwesomeIcon icon={faAngleDown} color='mediumpurple' style={{ marginLeft: 10 }} ></FontAwesomeIcon>
-        {isDropdownOpen && (
-          <ul>
-            <li>
-              <button onClick={toggleModal} style={styles.Box}>
-                <FontAwesomeIcon icon={faEdit} style={styles.sub_txt} /> Create Task
-              </button>
-            </li>
-            <li><button onClick={toggleModal2} style={styles.Box}>
-              <FontAwesomeIcon icon={faPlusSquare} style={styles.sub_txt} /> Create Project
-            </button></li>
-            <li><button onClick={toggleModal3} style={styles.Box}>
-              <FontAwesomeIcon icon={faUser} style={styles.sub_txt} /> Create Team
-            </button></li>
-            <li><button onClick={toggleModal4} style={styles.Box}>
-              <FontAwesomeIcon icon={faClock} style={styles.sub_txt} /> Create Event
-            </button></li>
-          </ul>
-        )}
+        <ul>
+          <li>
+            <button onClick={toggleModal} style={styles.Box}>
+              <FontAwesomeIcon icon={faEdit} style={styles.sub_txt} /> Create Task
+            </button>
+          </li>
+          <li><button onClick={toggleModal2} style={styles.Box}>
+            <FontAwesomeIcon icon={faPlusSquare} style={styles.sub_txt} /> Create Project
+          </button></li>
+          <li><button onClick={toggleModal3} style={styles.Box}>
+            <FontAwesomeIcon icon={faUser} style={styles.sub_txt} /> Create Team
+          </button></li>
+          <li><button onClick={toggleModal4} style={styles.Box}>
+            <FontAwesomeIcon icon={faClock} style={styles.sub_txt} /> Create Event
+          </button></li>
+        </ul>
 
-      </div>
+      </Modal>
       <section className="project" id="project">
         <h1 className="heading">
           our <span>project</span>
@@ -362,35 +443,56 @@ const Home = () => {
             <div className="box" key={index * Math.random()}>
               <img src={item.img} alt="" style={styles.img} />
               <h3>{item.text}</h3>
-              <div className="price" style={{fontSize: 12}}>
-               {item.description}
+              <div className="price" style={{ fontSize: 12 }}>
+                {item.description}
               </div>
-              <div className="price" style={{fontSize: 12}}>
-               StartDate: 6/01/2024
+              <div className="price" style={{ fontSize: 12 }}>
+                StartDate: 6/01/2024
               </div>
-              <div className="price" style={{fontSize: 12}}>
-               EndDate: 6/02/2024
+              <div className="price" style={{ fontSize: 12 }}>
+                EndDate: 6/02/2024
               </div>
               <h3>Workers: 4</h3>
               <h3>Names</h3>
-              <div className="price" style={{fontSize: 12}}>
-               1. John Doe
-               2. John park
-               3. Celena
-               4. Andrew
+              <div className="price" style={{ fontSize: 12 }}>
+                1. John Doe
+                2. John park
+                3. Celena
+                4. Andrew
               </div>
               <a href="#" className="btn">
                 Delete
               </a>
               <div className='row'>
-              <a href="#" className="btn">
-               Edit 
-              </a>
+                <a href="#" className="btn">
+                  Edit
+                </a>
               </div>
             </div>
           ))}
         </div>
       </section>
+      <div style={{ marginLeft: 10 }}>
+        {/* <button onClick={handleToggleDropdown} style={styles.button} >
+          <FontAwesomeIcon icon={faPlus} color='white' />
+        </button> */}
+        <React.Fragment>
+          <AppBar position="fixed" color="" sx={{ top: 'auto', bottom: 0, }}>
+            <Toolbar>
+              <StyledFab color="secondary" aria-label="add" onClick={toggleModal5}>
+                <AddIcon />
+              </StyledFab>
+            </Toolbar>
+          </AppBar>
+          <Offset />
+
+        </React.Fragment>
+        {/* <FontAwesomeIcon icon={faAngleDown} color='mediumpurple' style={{ marginLeft: 10 }} ></FontAwesomeIcon> */}
+
+      </div>
+
+
+
     </div>
   )
 
@@ -399,7 +501,7 @@ export default Home;
 const styles = {
 
   sub_txt: {
-    fontSize: 18,
+    fontSize: 20,
     color: 'mediumpurple',
     textAlign: 'left',
     marginHorizontal: 10,
@@ -434,19 +536,22 @@ const styles = {
   Box: {
 
     borderColor: 'mediumpurple', // Set the border color here
-    borderWidth: 3,
+    borderWidth: 5,
+    borderRadius: 15,
     backgroundColor: 'white',
     alignSelf: 'left',
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginVertical: 10,
     shadowColor: '#000',
-    width: '140px',
-    color: 'mediumpurple'
+    width: '240px',
+    height: '40px',
+    color: 'mediumpurple',
+    fontSize: 20,
   },
   img: {
- width: 200,
- height: 100.
+    width: 200,
+    height: 100.
 
   },
   Container: {
@@ -454,7 +559,7 @@ const styles = {
     height: 400,
     fontWeight: "bold",
     justifyContent: 'center',
-    marginTop: 100,
+
 
   },
 
@@ -616,6 +721,17 @@ const styles = {
     justifyContent: 'center',
     padding: 10,
   },
+  footer: {
+    marginBottom: 50,
+  },
+  errormessage: {
+    color: 'white',
+    backgroundColor: 'red',
+    borderRadius: 20,
+    textAlign: 'center',
+    paddingBottom: 6,
+    padding: 5,
+  },
 };
 const customModalStyles = {
   overlay: {
@@ -624,6 +740,23 @@ const customModalStyles = {
   },
   content: {
     top: '50%',
+    left: '20%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    padding: '20px',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+};
+const customModalStyles2 = {
+  overlay: {
+    backgroundColor: 'transparent',
+    zIndex: 9999,
+  },
+  content: {
+    top: '77%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
@@ -634,3 +767,11 @@ const customModalStyles = {
     borderWidth: 0,
   },
 };
+const StyledFab = styled(Fab)({
+  position: 'absolute',
+  zIndex: 1,
+  top: -30,
+  left: 0,
+  right: 0,
+  margin: '0 auto',
+});

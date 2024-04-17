@@ -21,7 +21,7 @@ const LoginScreen = () => {
       setErrormsg('All fields are required');
       return;
     } else {
-      fetch('http://192.168.0.111:3000/signin', {
+      fetch('http://localhost:3000/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -34,11 +34,12 @@ const LoginScreen = () => {
             setErrormsg(data.error);
           } else {
             alert('Logged in successfully');
-            navigate('/Home'); // Use navigate instead of navigate.push
+            navigate('/Home'); 
           }
         })
         .catch(error => {
           alert(fdata.email + '\nPlease try later' + '\n' + error);
+        console.log(error)
         });
     }
   };
@@ -141,13 +142,15 @@ const styles = {
     color: 'black',
   },
   input: {
-    fontSize: 12,
+    fontSize: 16,
     width: '100%',
     height: 40,
-    backgroundColor: '#dfe4ea',
+    backgroundColor: 'white',
     borderRadius: 4,
     padding: 10,
     color: 'black',
+    borderWidth: 4,  
+    borderColor: 'mediumpurple', 
   },
   loginButton: {
     backgroundColor: 'mediumpurple',
@@ -158,6 +161,8 @@ const styles = {
     cursor: 'pointer',
     width: '100%',
     fontSize: 18,
+    borderWidth: 4,  
+    borderColor: 'mediumpurple', 
   },
   registerText: {
     textAlign: 'center',
@@ -174,8 +179,12 @@ const styles = {
     cursor: 'pointer',
   },
   errormessage: {
-    color: 'red',
-    backgroundColor: 'black',
+    color: 'white',
+    backgroundColor: 'red',
+    borderRadius: 20,
+    textAlign: 'center',
+    paddingBottom: 6,
+    padding: 5,
   },
 };
 
