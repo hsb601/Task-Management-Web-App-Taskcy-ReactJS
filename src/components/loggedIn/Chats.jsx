@@ -11,6 +11,7 @@ import {
   MessageInput,
   Avatar,
   ConversationHeader,
+ 
 
 } from "@chatscope/chat-ui-kit-react";
 import imageSrc from "../assets/01.jpg";
@@ -30,7 +31,54 @@ import SearchIcon from '@mui/icons-material/Search';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  
+  const convers = [{
 
+              name:"Doe",
+              lastSenderName:'Doe',
+              info:'Hi', 
+              img: imageSrc,   
+              lastSeen: new Date(), 
+  },
+  {
+
+    name:"John",
+    lastSenderName:'Haseeb',
+    info:'what Happend',
+    img:imageSrc2,
+    lastSeen:  new Date(), 
+   
+ 
+},
+]
+const getTimeElapsed = (lastSeen) => {
+  const currentTime = new Date();
+  const lastSeenDate = new Date(lastSeen); // Convert lastSeen to a Date object
+  const timeDifference = currentTime.getTime() - lastSeenDate.getTime();
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return `Last seen: ${days} days ago`;
+  } else if (hours > 0) {
+    return `Last seen: ${hours} hours ago`;
+  } else if (minutes > 0) {
+    return `Last seen: ${minutes} minutes ago`;
+  } else {
+    return `Last seen: ${seconds} seconds ago`;
+  }
+};
+
+convers.forEach(conversation => {
+  conversation.lastSeen = getTimeElapsed(conversation.lastSeen);
+});
+const onConversationClick = (conversation) => {
+  setSelectedConversation(conversation);
+  console.log(conversation);
+};
   const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -90,100 +138,97 @@ const Chat = () => {
     // Update the messages array by adding the new message
     setMessages([...messages, newMessage]);
   }
+  const filteredMessages = selectedConversation
+    ? messages.filter(message => message.sender === selectedConversation)
+    : [];
   return (
 
     <div style={style.Container} >
-      <Box sx={{ flexGrow: 1, }} >
-        <AppBar position="static" sx={{ backgroundColor: 'white' }}>
+    <Box sx={{ flexGrow: 1, }} >
+      <AppBar position="static" sx={{ backgroundColor: 'white' }}>
+        <Toolbar>
+          <Typography
+            variant="h4"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, color: 'mediumpurple' }}
+          >
+            Chat Room
+          </Typography>
+          <Search sx={{
+            backgroundColor: 'mediumpurple',
+            '&:hover': {
+              backgroundColor: 'plum',
+            },
+          }}>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
+        </Toolbar>
+      </AppBar>
+    </Box>
 
-          <Toolbar>
-
-            <Typography
-              variant="h4"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, color: 'mediumpurple' }}
+    <MainContainer>
+      <Sidebar position="left" >
+        <ConversationList>
+          {convers.map((conversation, index) => (
+            <Conversation
+              key={index}
+              name={conversation.name}
+              lastSenderName={conversation.lastSenderName}
+              info={conversation.info}
+              onClick={() => onConversationClick(conversation)}
             >
-              Chat Room
-            </Typography>
-            <Search sx={{
-              backgroundColor: 'mediumpurple',
-              '&:hover': {
-                backgroundColor: 'plum',
-              },
-            }}>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-
-              />
-            </Search>
-          </Toolbar>
-        </AppBar>
-      </Box>
-
-      <MainContainer>
-        <Sidebar position="left" >
-          <ConversationList >
-            <Conversation name="Doe" lastSenderName='Doe' info='Hi'  >
-              <Avatar src={imageSrc} />
+              <Avatar src={conversation.img} />
             </Conversation>
+          ))}
+        </ConversationList>
+      </Sidebar>
+      <ChatContainer>
 
-            <Conversation name="John" lastSenderName='Haseeb' info='what going on!'>
-              <Avatar src={imageSrc2} />
-            </Conversation>
-
-          </ConversationList>
-        </Sidebar>
-        <ChatContainer>
-          <ConversationHeader>
-            <Avatar src={imageSrc} />
-
-            <ConversationHeader.Content userName='Doe' info='Last active 10 min. ago'  >
-
-            </ConversationHeader.Content>
-
+          <ConversationHeader >
+          <Avatar src={selectedConversation ? selectedConversation.img : imageSrc3} />
+            <ConversationHeader.Content userName={selectedConversation ? selectedConversation.name : 'User'} info={selectedConversation ? selectedConversation.lastSeen: 'Last seen: Nan'} />
           </ConversationHeader>
-
-          <MessageList style={style.messageSend}>
+      
+        <MessageList style={style.messageSend}>
+          <Message
+            model={{
+              message: 'kese ho',
+              sender: 'Doe',
+              sentTime: 'just now',
+              direction: 'incoming',
+              position: 'single',
+            }}
+            avatarSpacer
+          >
+            <Avatar src={imageSrc} />
+          </Message>
+          {filteredMessages.map((message, index) => (
             <Message
+              key={index}
               model={{
-                message: 'kese ho',
-                sender: 'Doe',
-                sentTime: 'just now',
-                direction: 'incoming',
-                position: 'single',
+                message: message.text,
+                sender: message.sender,
+                sentTime: message.sentTime,
+                direction: message.direction,
+                position: message.position,
               }}
               avatarSpacer
             >
-              <Avatar src={imageSrc} />
+              <Avatar src={message.avatar} />
             </Message>
-            {messages.map((message, index) => (
-              <Message
-                key={index}
-                model={{
-                  message: message.text,
-                  sender: message.sender,
-                  sentTime: message.sentTime,
-                  direction: message.direction,
-                  position: message.position,
-                }}
-                avatarSpacer
-              >
-                <Avatar src={message.avatar} />
-              </Message>
-            ))}
-
-
-          </MessageList>
-          <MessageInput placeholder="Type message here" onSend={onSendMessage} style={style.messageSendIcon}
-          />
-        </ChatContainer>
-      </MainContainer>
-    </div>
+          ))}
+        </MessageList>
+        <MessageInput placeholder="Type message here" onSend={onSendMessage} style={style.messageSendIcon} />
+      </ChatContainer>
+    </MainContainer>
+  </div>
   )
 }
 export default Chat;
