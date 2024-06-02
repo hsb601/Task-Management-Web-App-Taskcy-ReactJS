@@ -16,8 +16,8 @@ async function mailer(recieveremail, code) {
         secure: false, // true for 465, false for other ports
         requireTLS: true,
         auth: {
-            user: "haseebkhanhk601@gmail.com", // generated ethereal user
-            pass: "xtoh wzkv avqk kniv", // generated ethereal password
+            user: "", // generated ethereal user
+            pass: "", // generated ethereal password
         },
     });
 
